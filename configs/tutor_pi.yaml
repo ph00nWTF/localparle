@@ -1,0 +1,17 @@
+# Pi / low-RAM laptop config. Same code as tutor.yaml; smaller LLM.
+#   uv run python scripts/serve_web.py --config configs/tutor_pi.yaml
+asr:
+  checkpoint_dir: baseline
+  device: cuda
+  dtype: float16
+
+llm:
+  ollama_url: http://localhost:11434
+  model: gemma3:1b
+  temperature: 0.7
+  max_history_turns: 6
+
+pedagogy:
+  learner_state_path: data/learner/me.json
+  default_level: B1
+  ask_level_each_session: false

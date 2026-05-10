@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtualenv
+.venv/
+.python-version.local
+
+# Notebooks
+.ipynb_checkpoints/
+notebooks/**/*.ipynb_checkpoints/
+
+# Data — large or generated
+# data/raw is a symlink to /mnt/d/french-data/raw — exclude both the link and any tracked dir
+data/raw
+data/raw/
+data/processed/
+data/splits/
+data/vocab.json
+data/mdc-extracted/
+data/learner/
+*.tar
+*.tar.xz
+*.tar.gz
+*.zip
+
+# Audio scratch (commit only fixtures)
+*.wav
+*.mp3
+*.flac
+*.opus
+!tests/fixtures/*.wav
+
+# Models / training outputs
+models/checkpoints/
+models/final/
+models/final-v2/
+models/lm/
+models/piper/
+models/pi/
+runs/
+events.out.tfevents.*
+*.pt
+*.bin
+*.safetensors
+*.onnx
+*.ggml
+*.gguf
+
+# Secrets
+.env
+.env.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# SLURM logs
+logs/
+
+# Build artifacts
+build/
+dist/

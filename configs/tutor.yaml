@@ -1,0 +1,40 @@
+# Tutor application config — read by scripts/tutor_text.py, tutor_cli.py, tutor_gradio.py
+asr:
+  checkpoint_dir: models/final-v2
+  device: cuda
+  dtype: float16
+  lm_path: models/lm/lm_wiki.binary
+  unigrams_path: models/lm/unigrams_wiki.txt
+  alpha: 0.5
+  beta: 0.5
+  beam_width: 100
+  confidence_threshold: 0.6
+  dual_asr_threshold: 0.75   # run English ASR at A1/A2 when French confidence is below this
+
+llm:
+  ollama_url: http://localhost:11434
+  model: mistral-nemo
+  temperature: 0.7
+  max_history_turns: 6
+
+pedagogy:
+  learner_state_path: data/learner/me.json
+  default_level: B1
+  ask_level_each_session: false   # only ask if state missing or --ask-level is passed
+
+tts:
+  engine: piper
+  voice: fr_FR-siwis-medium
+  voice_path: models/piper/fr_FR-siwis-medium.onnx
+
+audio_io:
+  input_sample_rate: 16000
+  output_sample_rate: 22050
+  vad_aggressiveness: 2          # 0..3, higher = more aggressive (more silence trimmed)
+  silence_timeout_ms: 800        # end-of-utterance detection
+  max_recording_s: 30
+
+ui:
+  gradio_host: 0.0.0.0
+  gradio_port: 7860
+  cli_push_to_talk: true

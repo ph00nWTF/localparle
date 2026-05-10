@@ -1,0 +1,32 @@
+# Data preparation config — read by scripts/prepare_data.py and src/french_tutor/data.py
+# Mozilla Common Voice is now distributed exclusively via Mozilla Data Collective (MDC) as
+# of CV 23.0. The legacy Hugging Face mirror is an archive that should not be used for
+# training. See data/README.md for the one-time signup + dataset_id setup.
+mdc:
+  # Common Voice Scripted Speech 25.0 — French
+  # https://mozilladatacollective.com/datasets/common-voice-scripted-speech-25-0-french-c0e29588
+  dataset_id: "cmn5zugst00w3nv07upovf2bg"
+  # Tarball (~tens of GB) lands here. /mnt/d is fine for the single big file — the 9P
+  # bridge handles one large stream well. The SDK auto-resumes interrupted downloads.
+  download_dir: /kuhpc/scratch/deng/e394n539/french-data/mdc
+  extracted_dir: /kuhpc/scratch/deng/e394n539/french-data/mdc-extracted
+
+paths:
+  processed_dir: /kuhpc/scratch/deng/e394n539/french-data/processed
+  splits_dir: /kuhpc/scratch/deng/e394n539/french-data/splits
+  vocab_path: /kuhpc/work/deng/e394n539/FrenchAI/french/data/vocab.json
+
+audio:
+  sample_rate: 16000
+  mono: true
+  min_duration_s: 1.0
+  max_duration_s: 20.0
+
+filtering:
+  drop_if_down_votes_exceed_up_votes: true
+
+vocab:
+  build_from: train      # CTC vocab built from training transcripts only — no leakage
+  unk_token: "[UNK]"
+  pad_token: "[PAD]"
+  word_delimiter: "|"

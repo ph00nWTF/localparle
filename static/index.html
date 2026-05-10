@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>French Tutor</title>
+<style>
+:root {
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --text: #1d1d1f;
+  --text2: #6e6e73;
+  --blue: #0071e3;
+  --green: #34c759;
+  --red: #ff3b30;
+  --pill-bg: #e8e8ed;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --font: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --ease: 0.2s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ── Screens ── */
+.screen {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 32px;
+  animation: fadein 0.25s ease;
+}
+.hidden { display: none !important; }
+@keyframes fadein { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ── Typography ── */
+h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 6px; }
+h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 8px; }
+.subtitle { color: var(--text2); font-size: 15px; line-height: 1.5; margin-bottom: 28px; }
+
+/* ── Buttons ── */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--ease);
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { opacity: 0.88; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-ghost {
+  padding: 9px 16px;
+  background: var(--pill-bg);
+  color: var(--text);
+  border: none;
+  border-radius: 20px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--ease);
+}
+.btn-ghost:hover { background: #d8d8de; }
+.btn-ghost.danger { color: var(--red); }
+
+/* ── Level selection ── */
+.level-header { text-align: center; margin-bottom: 28px; }
+.flag { font-size: 36px; display: block; margin-bottom: 14px; }
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.level-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  background: var(--bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--ease);
+  font-family: var(--font);
+  gap: 3px;
+}
+.level-btn:hover { background: #eaeaef; }
+.level-btn.selected { background: rgba(0,113,227,0.07); border-color: var(--blue); }
+.level-code { font-size: 18px; font-weight: 700; color: var(--text); }
+.level-btn.selected .level-code { color: var(--blue); }
+.level-label { font-size: 10px; color: var(--text2); font-weight: 500; }
+.level-btn-full { grid-column: 1 / -1; flex-direction: row; gap: 8px; padding: 12px; }
+.level-btn-full .level-code { font-size: 16px; }
+
+/* ── Mic screen ── */
+.mic-screen { text-align: center; }
+.mic-icon-wrap {
+  width: 72px; height: 72px;
+  background: rgba(0,113,227,0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+}
+
+/* ── Tutor screen ── */
+#screen-tutor { padding: 20px 20px 22px; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.mode-pills {
+  display: flex;
+  background: var(--pill-bg);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 0;
+}
+.mode-pill {
+  padding: 5px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 17px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: var(--ease);
+  white-space: nowrap;
+}
+.mode-pill.active { background: var(--card); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+.level-chip-wrap { position: relative; }
+.level-chip {
+  padding: 5px 12px;
+  background: var(--pill-bg);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  border: none;
+  font-family: var(--font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.level-chip-wrap select {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 16px;
+}
+
+/* ── Circle ── */
+.circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 8px 0 16px;
+}
+#circle { cursor: pointer; display: block; }
+.circle-label {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+  margin-top: 10px;
+  height: 18px;
+  transition: var(--ease);
+}
+
+/* ── Transcript ── */
+.transcript-box {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  max-height: 172px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.transcript-box:empty::before {
+  content: 'La conversation apparaîtra ici…';
+  color: var(--text2);
+  font-style: italic;
+  font-size: 13px;
+}
+.turn { margin-bottom: 10px; }
+.turn:last-child { margin-bottom: 0; }
+.turn-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 2px;
+}
+.turn-tutor .turn-label { color: var(--blue); }
+.turn-errors {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 3px;
+  opacity: 0.85;
+}
+
+/* ── Controls ── */
+.controls { display: flex; gap: 8px; align-items: center; }
+#btn-cancel { display: none; }
+#btn-reset { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- Screen 1: Level selection -->
+<div id="screen-level" class="screen">
+  <div class="level-header">
+    <span class="flag">🇫🇷</span>
+    <h1>Bonjour!</h1>
+    <p class="subtitle">What's your French level?</p>
+  </div>
+  <div class="level-grid">
+    <button class="level-btn" data-level="A1"><span class="level-code">A1</span><span class="level-label">Beginner</span></button>
+    <button class="level-btn" data-level="A2"><span class="level-code">A2</span><span class="level-label">Elementary</span></button>
+    <button class="level-btn" data-level="B1"><span class="level-code">B1</span><span class="level-label">Intermediate</span></button>
+    <button class="level-btn" data-level="B2"><span class="level-code">B2</span><span class="level-label">Upper-Inter</span></button>
+    <button class="level-btn" data-level="C1"><span class="level-code">C1</span><span class="level-label">Advanced</span></button>
+    <button class="level-btn" data-level="C2"><span class="level-code">C2</span><span class="level-label">Proficient</span></button>
+    <button class="level-btn level-btn-full" data-level="C2" data-native="true">
+      <span class="level-code">Natif</span>
+      <span class="level-label">Native speaker</span>
+    </button>
+  </div>
+  <button id="btn-start" class="btn btn-primary" disabled>Get started →</button>
+</div>
+
+<!-- Screen 2: Mic permission -->
+<div id="screen-mic" class="screen mic-screen hidden">
+  <div class="mic-icon-wrap">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0071e3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  </div>
+  <h2>Microphone access</h2>
+  <p class="subtitle">French Tutor needs your microphone to hear you speak.</p>
+  <button id="btn-mic" class="btn btn-primary">Allow access</button>
+</div>
+
+<!-- Screen 3: Tutoring -->
+<div id="screen-tutor" class="screen hidden">
+  <div class="topbar">
+    <div class="mode-pills">
+      <button class="mode-pill active" data-mode="guided">Guided</button>
+      <button class="mode-pill" data-mode="sandbox">Free</button>
+    </div>
+    <div class="level-chip-wrap">
+      <button class="level-chip" id="level-chip-btn">
+        <span id="chip-text">B1</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#0071e3" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <select id="level-select" aria-label="Change level">
+        <option value="A1">A1 – Beginner</option>
+        <option value="A2">A2 – Elementary</option>
+        <option value="B1">B1 – Intermediate</option>
+        <option value="B2">B2 – Upper-Intermediate</option>
+        <option value="C1">C1 – Advanced</option>
+        <option value="C2">C2 – Proficient / Native</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="circle-wrap">
+    <canvas id="circle" width="200" height="200"></canvas>
+    <div class="circle-label" id="circle-label">Tap to speak</div>
+  </div>
+
+  <div class="transcript-box" id="transcript"></div>
+
+  <div class="controls">
+    <button id="btn-cancel" class="btn-ghost danger">Cancel</button>
+    <button id="btn-reset" class="btn-ghost">New topic</button>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let uiState  = 'idle';     // idle | recording | processing | playing
+let selLevel = null;
+let curMode  = 'guided';
+
+// Audio
+let audioCtx, analyser, freqData, mediaStream, mediaRecorder, audioChunks = [];
+
+// Canvas
+const cv   = document.getElementById('circle');
+const ctx  = cv.getContext('2d');
+const CX   = 100, CY = 100, R = 72;
+let phase  = 0;
+
+// ── Screen 1: Level select ────────────────────────────────────────────────────
+document.querySelectorAll('.level-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selLevel = btn.dataset.level;
+    document.getElementById('btn-start').disabled = false;
+  });
+});
+
+document.getElementById('btn-start').addEventListener('click', async () => {
+  // Set level on backend immediately (fast, no model reload)
+  fetch('/level', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({level: selLevel})});
+  showScreen('mic');
+});
+
+// ── Screen 2: Mic permission ──────────────────────────────────────────────────
+document.getElementById('btn-mic').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-mic');
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({audio: true});
+    setupAnalyser(mediaStream);
+    await enterTutor();
+  } catch(e) {
+    btn.textContent = 'Microphone denied — try again';
+    btn.disabled = false;
+  }
+});
+
+// ── Screen 3: Tutor ───────────────────────────────────────────────────────────
+async function enterTutor() {
+  showScreen('tutor');
+  document.getElementById('chip-text').textContent = selLevel;
+  document.getElementById('level-select').value = selLevel;
+  // Fetch opening with audio — play it
+  const j = await fetch('/opening').then(r => r.json());
+  appendTurn('tutor', j.opening_line);
+  if (j.reply_audio_b64) playAudio(j.reply_audio_b64);
+}
+
+// Mode toggle
+document.querySelectorAll('.mode-pill').forEach(pill => {
+  pill.addEventListener('click', async () => {
+    if (pill.classList.contains('active')) return;
+    document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    curMode = pill.dataset.mode;
+    clearTranscript();
+    const j = await fetch('/mode', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({mode: curMode})}).then(r => r.json());
+    if (j.opening_line) {
+      appendTurn('tutor', j.opening_line);
+      if (j.reply_audio_b64) playAudio(j.reply_audio_b64);
+    }
+  });
+});
+
+// Level change in-app
+document.getElementById('level-select').addEventListener('change', async e => {
+  selLevel = e.target.value;
+  document.getElementById('chip-text').textContent = selLevel;
+  clearTranscript();
+  const j = await fetch('/level', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({level: selLevel})}).then(r => r.json());
+  appendTurn('tutor', j.opening_line);
+  if (j.reply_audio_b64) playAudio(j.reply_audio_b64);
+});
+
+// Circle tap
+cv.addEventListener('click', () => {
+  if (uiState === 'idle') startRec();
+  else if (uiState === 'recording') stopRec(false);
+});
+
+// Cancel
+document.getElementById('btn-cancel').addEventListener('click', () => {
+  if (uiState === 'recording') stopRec(true);
+});
+
+// Reset / new topic
+document.getElementById('btn-reset').addEventListener('click', async () => {
+  clearTranscript();
+  setState('processing');
+  const j = await fetch('/reset', {method:'POST'}).then(r => r.json());
+  appendTurn('tutor', j.opening_line);
+  if (j.reply_audio_b64) playAudio(j.reply_audio_b64); else setState('idle');
+});
+
+// ── Recording ─────────────────────────────────────────────────────────────────
+function startRec() {
+  if (!mediaStream) return;
+  audioChunks = [];
+  mediaRecorder = new MediaRecorder(mediaStream);
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.onstop = () => { if (!mediaRecorder._cancel) sendAudio(); };
+  mediaRecorder.start();
+  setState('recording');
+  document.getElementById('btn-cancel').style.display = 'block';
+}
+
+function stopRec(cancel) {
+  if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+  mediaRecorder._cancel = cancel;
+  mediaRecorder.stop();
+  document.getElementById('btn-cancel').style.display = 'none';
+  setState(cancel ? 'idle' : 'processing');
+}
+
+async function sendAudio() {
+  const blob = new Blob(audioChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
+  try {
+    const j = await fetch('/turn', {method:'POST', body:blob,
+      headers:{'Content-Type': blob.type}}).then(r => r.json());
+    if (j.error) { appendTurn('error', j.error); setState('idle'); return; }
+    if (j.transcript) appendTurn('you', j.transcript, j.errors);
+    if (j.reply) appendTurn('tutor', j.reply);
+    if (j.reply_audio_b64) playAudio(j.reply_audio_b64);
+    else setState('idle');
+  } catch(e) {
+    appendTurn('error', 'Network error: ' + e.message);
+    setState('idle');
+  }
+}
+
+// ── Audio playback ─────────────────────────────────────────────────────────────
+function playAudio(b64) {
+  setState('playing');
+  const audio = new Audio('data:audio/wav;base64,' + b64);
+  audio.onended = () => setState('idle');
+  audio.onerror = () => setState('idle');
+  audio.play().catch(() => setState('idle'));
+}
+
+// ── Transcript ────────────────────────────────────────────────────────────────
+function appendTurn(role, text, errors) {
+  const box = document.getElementById('transcript');
+  const div = document.createElement('div');
+  div.className = 'turn turn-' + role;
+  if (role === 'tutor' || role === 'you') {
+    const lbl = document.createElement('div');
+    lbl.className = 'turn-label';
+    lbl.textContent = role === 'tutor' ? 'Tutor' : 'You';
+    div.appendChild(lbl);
+  }
+  const txt = document.createElement('div');
+  txt.textContent = text;
+  div.appendChild(txt);
+  if (errors && errors.length) {
+    const err = document.createElement('div');
+    err.className = 'turn-errors';
+    err.textContent = errors.map(e => e.word + ' → ' + e.correction).join(' · ');
+    div.appendChild(err);
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function clearTranscript() {
+  document.getElementById('transcript').innerHTML = '';
+}
+
+// ── Canvas animation ──────────────────────────────────────────────────────────
+function setupAnalyser(stream) {
+  audioCtx = new AudioContext();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 32;
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+  audioCtx.createMediaStreamSource(stream).connect(analyser);
+}
+
+function amplitude() {
+  if (!analyser) return 0;
+  analyser.getByteFrequencyData(freqData);
+  return freqData.reduce((a, b) => a + b, 0) / freqData.length / 255;
+}
+
+function drawMic() {
+  ctx.save();
+  ctx.translate(CX, CY + 4);
+  ctx.strokeStyle = '#86868b';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  // Capsule
+  ctx.beginPath();
+  ctx.arc(0, -10, 9, Math.PI, 0);
+  ctx.lineTo(9, 4);
+  ctx.arc(0, 4, 9, 0, Math.PI);
+  ctx.closePath();
+  ctx.stroke();
+  // Stand
+  ctx.beginPath();
+  ctx.arc(0, -3, 15, 0, Math.PI);
+  ctx.stroke();
+  // Stem + base
+  ctx.beginPath();
+  ctx.moveTo(0, 12); ctx.lineTo(0, 18);
+  ctx.moveTo(-6, 18); ctx.lineTo(6, 18);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawFrame() {
+  ctx.clearRect(0, 0, 200, 200);
+  phase += 0.045;
+
+  if (uiState === 'idle') {
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2);
+    ctx.fillStyle = '#e8e8ed'; ctx.fill();
+    drawMic();
+
+  } else if (uiState === 'recording') {
+    const amp = amplitude();
+    const bump = amp * 22;
+    // Glow rings
+    for (let i = 2; i >= 0; i--) {
+      ctx.beginPath(); ctx.arc(CX, CY, R + bump + i*13, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,113,227,${0.06 - i*0.015})`;
+      ctx.fill();
+    }
+    // Circle
+    ctx.beginPath(); ctx.arc(CX, CY, R + bump*0.25, 0, Math.PI*2);
+    ctx.fillStyle = '#0071e3'; ctx.fill();
+    // Stop square
+    const sq = 9;
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.beginPath();
+    ctx.roundRect(CX-sq, CY-sq, sq*2, sq*2, 3);
+    ctx.fill();
+
+  } else if (uiState === 'processing') {
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI*2);
+    ctx.fillStyle = '#e8e8ed'; ctx.fill();
+    ctx.beginPath();
+    ctx.arc(CX, CY, R - 10, phase, phase + 1.5);
+    ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.stroke();
+
+  } else if (uiState === 'playing') {
+    const t = (phase * 0.38) % 1;
+    // Ripple
+    ctx.beginPath(); ctx.arc(CX, CY, R + t*38, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(52,199,89,${(1-t)*0.22})`; ctx.fill();
+    // Circle with gentle pulse
+    const s = 1 + 0.022 * Math.sin(phase * 4.5);
+    ctx.beginPath(); ctx.arc(CX, CY, R*s, 0, Math.PI*2);
+    ctx.fillStyle = '#34c759'; ctx.fill();
+  }
+
+  requestAnimationFrame(drawFrame);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const LABELS = {idle:'Tap to speak', recording:'Tap to send', processing:'Thinking…', playing:'Tutor speaking…'};
+
+function setState(s) {
+  uiState = s;
+  document.getElementById('circle-label').textContent = LABELS[s] || '';
+}
+
+function showScreen(name) {
+  ['level','mic','tutor'].forEach(n =>
+    document.getElementById('screen-'+n).classList.toggle('hidden', n !== name));
+}
+
+// Start draw loop
+drawFrame();
+</script>
+</body>
+</html>
